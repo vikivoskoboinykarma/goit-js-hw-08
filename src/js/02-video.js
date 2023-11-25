@@ -1,29 +1,20 @@
-import Player from '@vimeo/player';
-import throttle from 'lodash.throttle';
 
-const vimeoPlayer = new Player('vimeo-player');
+import Player from "@vimeo/player";
+import throttle from "lodash.throttle";
 
-// Отримання збереженого часу відтворення з локального сховища
-const savedTime = localStorage.getItem('videoplayer-current-time');
+const iframe = document.querySelector("#vimeo-player");
 
-// Встановлення часу відтворення, якщо він є
-if (savedTime) {
-  vimeoPlayer.setCurrentTime(parseFloat(savedTime)).then(() => {
-    // Відтворення почнеться з збереженої позиції
-  }).catch((error) => {
-    console.error('Error setting current time:', error);
-  });
-}
+const player = new Player(iframe);
 
-// Виклик функції при оновленні часу відтворення
-vimeoPlayer.on('timeupdate', (event) => {
-    throttle(() => handleTimeUpdate(event), 1000, { trailing: false });
-  });
+const STORAGE_KEY = "videoplayer-current-time";
 
-// Функція обробки подій timeupdate
-function handleTimeUpdate(event) {
-  const currentTime = event.seconds;
+const savedTime = localStorage.getItem(STORAGE_KEY) || 0;
 
-  // Збереження часу в локальне сховище
-  localStorage.setItem('videoplayer-current-time', currentTime);
-}
+player.setCurrentTime(savedTime);
+
+const saveTime = function (data) {
+    localStorage.setItem(STORAGE_KEY, data.seconds);
+};
+const throttledSaveTime = throttle(saveTime, 1000);
+
+player.on("timeupdate", throttledSaveTime,);
