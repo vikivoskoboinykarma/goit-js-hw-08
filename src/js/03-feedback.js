@@ -1,4 +1,3 @@
-
 import throttle from 'lodash.throttle';
 
 const form = document.querySelector('.feedback-form');
@@ -33,10 +32,16 @@ form.addEventListener('input', saveFormState);
 // Під час завантаження сторінки перевіряємо стан сховища і заповнюємо поля форми
 window.addEventListener('load', loadFormState);
 
-// Під час сабміту форми очищуємо сховище та виводимо дані у консоль
+// Під час сабміту форми проводимо перевірку перед викликом submit
 form.addEventListener('submit', (event) => {
   event.preventDefault();
-  
+
+  // Перевірка на заповненість полів перед submit
+  if (!emailInput.value || !messageInput.value) {
+    alert('Please fill in all fields before submitting.');
+    return;
+  }
+
   const formData = {
     email: emailInput.value,
     message: messageInput.value,
